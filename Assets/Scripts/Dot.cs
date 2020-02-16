@@ -18,12 +18,10 @@ public class Dot : MonoBehaviour {
     private Vector2 finalTouchPosition;
     private Vector2 tempPosition;
 
-    [Header("Swipe stuff")]
-    public float swipeAngle;
+    [Header("Swipe stuff")] public float swipeAngle;
     private const float SwipeResist = .6f;
 
-    [Header("Powerup stuff")]
-    public bool isColumnBomb;
+    [Header("Powerup stuff")] public bool isColumnBomb;
     public bool isRowBomb;
     public bool isColorBomb;
     public bool isAdjacentBomb;
@@ -45,14 +43,12 @@ public class Dot : MonoBehaviour {
         TriggerXPosition();
         TriggerYPosition();
     }
-    
+
     //This is for testing and Debug only.
-    private void OnMouseOver()
-    {
-        if(Input.GetMouseButtonDown(1)){
-            isAdjacentBomb = true;
-            var marker = Instantiate(adjacentMarker, transform.position, Quaternion.identity);
-            marker.transform.parent = transform;
+    private void OnMouseOver() {
+        if (Input.GetMouseButtonDown(1)) {
+            isColorBomb = true;
+            AppendObject(colorBomb);
         }
     }
 
@@ -61,11 +57,13 @@ public class Dot : MonoBehaviour {
             //this piece is a color bomb and the other piece is the color to destroy
             findMatches.MatchPiecesOfColor(gameObject.tag);
             nextDot.GetComponent<Dot>().isMatched = true;
-        } else if (nextDot.GetComponent<Dot>().isColorBomb) {
+        }
+        else if (nextDot.GetComponent<Dot>().isColorBomb) {
             //the other piece is the color bomb and this piece has the color to destroy
             findMatches.MatchPiecesOfColor(nextDot.tag);
             isMatched = true;
         }
+
         yield return new WaitForSeconds(.5f);
         if (nextDot != null) {
             var nextDotComponent = nextDot.GetComponent<Dot>();
@@ -143,10 +141,10 @@ public class Dot : MonoBehaviour {
         //ignore clicks
         if (Math.Abs(firstTouchPosition.x - finalTouchPosition.x) > SwipeResist ||
             Math.Abs(firstTouchPosition.y - finalTouchPosition.y) > SwipeResist) {
+            board.currentState = GameState.wait;
             swipeAngle = Mathf.Atan2(finalTouchPosition.y - firstTouchPosition.y,
                 finalTouchPosition.x - firstTouchPosition.x) * 180 / Mathf.PI;
             SwipeElements();
-            board.currentState = GameState.wait;
             board.currentDot = this;
         }
         else {
@@ -154,58 +152,61 @@ public class Dot : MonoBehaviour {
         }
     }
 
+    private void MovePiecesActual(Vector2 direction) {
+        nextDot = board.allDots[column + (int) direction.x, row + (int) direction.y];
+        previousRow = row;
+        previousColumn = column;
+        nextDot.GetComponent<Dot>().column -= (int) direction.x;
+        nextDot.GetComponent<Dot>().row -= (int) direction.y;
+        column += (int) direction.x;
+        row += (int) direction.y;
+        StartCoroutine(CheckMoveCoroutine());
+    }
+
     private void SwipeElements() {
         if (swipeAngle > -45 && swipeAngle <= 45 && column < board.width - 1) {
             //right swipe
-            nextDot = board.allDots[column + 1, row];
-            previousRow = row;
-            previousColumn = column;
-            nextDot.GetComponent<Dot>().column--;
-            column++;
+            MovePiecesActual(Vector2.right);
         }
         else if (swipeAngle > 45 && swipeAngle <= 135 && row < board.height - 1) {
             //up swipe
-            nextDot = board.allDots[column, row + 1];
-            previousRow = row;
-            previousColumn = column;
-            nextDot.GetComponent<Dot>().row--;
-            row++;
+            MovePiecesActual(Vector2.up);
         }
         else if ((swipeAngle > 135 || swipeAngle <= -135) && column > 0) {
             //left swipe
-            nextDot = board.allDots[column - 1, row];
-            previousRow = row;
-            previousColumn = column;
-            nextDot.GetComponent<Dot>().column++;
-            column--;
+            MovePiecesActual(Vector2.left);
         }
         else if (swipeAngle < -45 && swipeAngle >= -135 && row > 0) {
             //down swipe
-            nextDot = board.allDots[column, row - 1];
-            previousRow = row;
-            previousColumn = column;
-            nextDot.GetComponent<Dot>().row++;
-            row--;
+            MovePiecesActual(Vector2.down);
         }
-
-        StartCoroutine(CheckMoveCoroutine());
+        else {
+            board.currentState = GameState.move;
+        }
     }
 
     public void MakeRowBomb() {
         isRowBomb = true;
-        var arrow = Instantiate(rowArrow, transform.position, Quaternion.identity);
-        arrow.transform.parent = transform;
+        AppendObject(rowArrow);
     }
 
     public void MakeColumnBomb() {
         isColumnBomb = true;
-        var arrow = Instantiate(columnArrow, transform.position, Quaternion.identity);
-        arrow.transform.parent = transform;
+        AppendObject(columnArrow);
     }
 
     public void MakeColorBomb() {
         isColorBomb = true;
-        var color = Instantiate(colorBomb, transform.position, Quaternion.identity);
-        color.transform.parent = transform;
+        AppendObject(colorBomb);
+    }
+
+    public void MakeAdjacentBomb() {
+        isColorBomb = true;
+        AppendObject(adjacentMarker);
+    }
+
+    private void AppendObject(GameObject appendableObject) {
+        var appendedObject = Instantiate(appendableObject, transform.position, Quaternion.identity);
+        appendedObject.transform.parent = transform;
     }
 }

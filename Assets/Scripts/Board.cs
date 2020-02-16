@@ -78,11 +78,85 @@ public class Board : MonoBehaviour {
         return false;
     }
 
+    public bool ColumnOrRow() {
+        var numberHorizontal = 0;
+        var numberVertical = 0;
+        var firstPiece = findMatches.currentMatches[0].GetComponent<Dot>();
+        if (firstPiece != null) {
+            foreach (var currentPiece in findMatches.currentMatches) {
+                var dot = currentPiece.GetComponent<Dot>();
+                if (dot.row == firstPiece.row) {
+                    numberHorizontal++;
+                }
+
+                if (dot.column == firstPiece.column) {
+                    numberVertical++;
+                }
+            }
+        }
+
+        return numberVertical == 5 || numberHorizontal == 5;
+    }
+
+    private void CheckToMakeBombs() {
+        var matchesCount = findMatches.currentMatches.Count;
+        if (matchesCount == 4 || matchesCount == 7) {
+            findMatches.CheckBombs();
+        }
+
+        if (matchesCount == 5 || matchesCount == 6) {
+            if (ColumnOrRow()) {
+                //make a color bomb
+                if (currentDot != null) {
+                    if (currentDot.isMatched) {
+                        if (!currentDot.isColorBomb) {
+                            currentDot.isMatched = false;
+                            currentDot.MakeColorBomb();
+                        }
+                    } else {
+                        if (currentDot.nextDot != null) {
+                            var nextDot = currentDot.nextDot.GetComponent<Dot>();
+                            if (nextDot.isMatched) {
+                                if (!nextDot.isColorBomb) {
+                                    nextDot.isMatched = false;
+                                    nextDot.MakeColorBomb();
+                                }
+                            }
+                        }
+                        
+                    }
+                }
+            }
+            else {
+                //make a adjacent bomb
+                if (currentDot != null) {
+                    if (currentDot.isMatched) {
+                        if (!currentDot.isAdjacentBomb) {
+                            currentDot.isMatched = false;
+                            currentDot.MakeAdjacentBomb();
+                        }
+                    } else {
+                        if (currentDot.nextDot != null) {
+                            var nextDot = currentDot.nextDot.GetComponent<Dot>();
+                            if (nextDot.isMatched) {
+                                if (!nextDot.isAdjacentBomb) {
+                                    nextDot.isMatched = false;
+                                    nextDot.MakeAdjacentBomb();
+                                }
+                            }
+                        }
+                        
+                    }
+                }
+            }
+        }
+    }
+
     private void DestroyMatchesAt(int column, int row) {
         if (allDots[column, row].GetComponent<Dot>().isMatched) {
             //check count of matching pieces
-            if (findMatches.currentMatches.Count > 3 && findMatches.currentMatches.Count < 5) {
-                findMatches.CheckBombs();
+            if (findMatches.currentMatches.Count > 3) {
+                CheckToMakeBombs();
             }
 
             var particle = Instantiate(destroyEffect, allDots[column, row].transform.position, Quaternion.identity);
