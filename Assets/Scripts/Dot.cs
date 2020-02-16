@@ -26,13 +26,16 @@ public class Dot : MonoBehaviour {
     public bool isColumnBomb;
     public bool isRowBomb;
     public bool isColorBomb;
+    public bool isAdjacentBomb;
     public GameObject rowArrow;
     public GameObject columnArrow;
     public GameObject colorBomb;
+    public GameObject adjacentMarker;
 
     private void Start() {
         isColumnBomb = false;
         isRowBomb = false;
+        isAdjacentBomb = false;
         // works only if there is one board
         board = FindObjectOfType<Board>();
         findMatches = FindObjectOfType<FindMatches>();
@@ -42,16 +45,26 @@ public class Dot : MonoBehaviour {
         TriggerXPosition();
         TriggerYPosition();
     }
+    
+    //This is for testing and Debug only.
+    private void OnMouseOver()
+    {
+        if(Input.GetMouseButtonDown(1)){
+            isAdjacentBomb = true;
+            var marker = Instantiate(adjacentMarker, transform.position, Quaternion.identity);
+            marker.transform.parent = transform;
+        }
+    }
 
     private IEnumerator CheckMoveCoroutine() {
         if (isColorBomb) {
             //this piece is a color bomb and the other piece is the color to destroy
-            findMatches.MatchPiecesOfColor(nextDot.tag);
-            isMatched = true;
-        } else if (nextDot.GetComponent<Dot>().isColorBomb) {
-            //the other piece is the color bomb and this piece has the color to destroy
             findMatches.MatchPiecesOfColor(gameObject.tag);
             nextDot.GetComponent<Dot>().isMatched = true;
+        } else if (nextDot.GetComponent<Dot>().isColorBomb) {
+            //the other piece is the color bomb and this piece has the color to destroy
+            findMatches.MatchPiecesOfColor(nextDot.tag);
+            isMatched = true;
         }
         yield return new WaitForSeconds(.5f);
         if (nextDot != null) {
@@ -188,5 +201,11 @@ public class Dot : MonoBehaviour {
         isColumnBomb = true;
         var arrow = Instantiate(columnArrow, transform.position, Quaternion.identity);
         arrow.transform.parent = transform;
+    }
+
+    public void MakeColorBomb() {
+        isColorBomb = true;
+        var color = Instantiate(colorBomb, transform.position, Quaternion.identity);
+        color.transform.parent = transform;
     }
 }

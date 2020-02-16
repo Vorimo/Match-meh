@@ -17,21 +17,27 @@ public class FindMatches : MonoBehaviour {
         StartCoroutine(FindAllMatchesCoroutine());
     }
 
-    private void GetRowBombAffectedElementsIfExists(List<Dot> dots) {
+    private void ProcessAdjacentBombAffectedElementsIfExists(IEnumerable<Dot> dots) {
+        foreach (var dot in dots.Where(dot => dot.isAdjacentBomb)) {
+            currentMatches.Union(GetAdjacentPieces(dot.column, dot.row));
+        }
+    }
+
+    private void ProcessRowBombAffectedElementsIfBombExists(IEnumerable<Dot> dots) {
         foreach (var dot in dots.Where(dot => dot.isRowBomb)) {
             currentMatches.Union(GetRowPieces(dot.row));
         }
     }
 
-    private void ProcessColumnBombAffectedElementsIfExists(List<Dot> dots) {
+    private void ProcessColumnBombAffectedElementsIfBombExists(IEnumerable<Dot> dots) {
         foreach (var dot in dots.Where(dot => dot.isColumnBomb)) {
             currentMatches.Union(GetColumnPieces(dot.column));
         }
     }
 
     private void ProcessElementsAffectedByBombIfBombExists(List<Dot> dots) {
-        GetRowBombAffectedElementsIfExists(dots);
-        ProcessColumnBombAffectedElementsIfExists(dots);
+        ProcessRowBombAffectedElementsIfBombExists(dots);
+        ProcessColumnBombAffectedElementsIfBombExists(dots);
     }
 
     private void ProcessNearbyPieces(List<GameObject> dots) {
@@ -61,6 +67,9 @@ public class FindMatches : MonoBehaviour {
                                 ProcessElementsAffectedByBombIfBombExists(new List<Dot>
                                     {currentDotComponent, leftDotComponent, rightDotComponent});
 
+                                ProcessAdjacentBombAffectedElementsIfExists(new List<Dot>
+                                    {currentDotComponent, leftDotComponent, rightDotComponent});
+
                                 ProcessNearbyPieces(new List<GameObject> {currentDot, leftDot, rightDot});
                             }
                         }
@@ -74,6 +83,8 @@ public class FindMatches : MonoBehaviour {
                             var downDotComponent = downDot.GetComponent<Dot>();
                             if (upDot.CompareTag(currentDot.tag) && downDot.CompareTag(currentDot.tag)) {
                                 ProcessElementsAffectedByBombIfBombExists(new List<Dot>
+                                    {currentDotComponent, downDotComponent, upDotComponent});
+                                ProcessAdjacentBombAffectedElementsIfExists(new List<Dot>
                                     {currentDotComponent, downDotComponent, upDotComponent});
 
                                 ProcessNearbyPieces(new List<GameObject> {currentDot, downDot, upDot});
@@ -98,8 +109,8 @@ public class FindMatches : MonoBehaviour {
         }
     }
 
-    List<GameObject> GetColumnPieces(int column) {
-        List<GameObject> dots = new List<GameObject>();
+    private List<GameObject> GetColumnPieces(int column) {
+        var dots = new List<GameObject>();
         for (var i = 0; i < board.height; i++) {
             if (board.allDots[column, i] != null) {
                 dots.Add(board.allDots[column, i]);
@@ -110,8 +121,23 @@ public class FindMatches : MonoBehaviour {
         return dots;
     }
 
-    List<GameObject> GetRowPieces(int row) {
-        List<GameObject> dots = new List<GameObject>();
+    private List<GameObject> GetAdjacentPieces(int column, int row) {
+        var dots = new List<GameObject>();
+        for (var i = column - 1; i <= column + 1; i++) {
+            for (var j = row - 1; j <= row + 1; j++) {
+                //the piece is inside the board
+                if (i >= 0 && i < board.width && j >= 0 && j < board.height) {
+                    dots.Add(board.allDots[i, j]);
+                    board.allDots[i, j].GetComponent<Dot>().isMatched = true;
+                }
+            }
+        }
+
+        return dots;
+    }
+
+    private List<GameObject> GetRowPieces(int row) {
+        var dots = new List<GameObject>();
         for (var i = 0; i < board.width; i++) {
             if (board.allDots[i, row] != null) {
                 dots.Add(board.allDots[i, row]);
