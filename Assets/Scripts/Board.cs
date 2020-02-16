@@ -81,9 +81,10 @@ public class Board : MonoBehaviour {
     private void DestroyMatchesAt(int column, int row) {
         if (allDots[column, row].GetComponent<Dot>().isMatched) {
             //check count of matching pieces
-            if (findMatches.currentMatches.Count > 3) {
+            if (findMatches.currentMatches.Count > 3 && findMatches.currentMatches.Count < 5) {
                 findMatches.CheckBombs();
             }
+
             findMatches.currentMatches.Remove(allDots[column, row]);
             var particle = Instantiate(destroyEffect, allDots[column, row].transform.position, Quaternion.identity);
             Destroy(particle, .5f);

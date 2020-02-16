@@ -22,11 +22,13 @@ public class Dot : MonoBehaviour {
     public float swipeAngle;
     private const float SwipeResist = .6f;
 
-    [Header("Powerup stuff")] public bool isColumnBomb;
-
+    [Header("Powerup stuff")]
+    public bool isColumnBomb;
     public bool isRowBomb;
+    public bool isColorBomb;
     public GameObject rowArrow;
     public GameObject columnArrow;
+    public GameObject colorBomb;
 
     private void Start() {
         isColumnBomb = false;
@@ -42,6 +44,15 @@ public class Dot : MonoBehaviour {
     }
 
     private IEnumerator CheckMoveCoroutine() {
+        if (isColorBomb) {
+            //this piece is a color bomb and the other piece is the color to destroy
+            findMatches.MatchPiecesOfColor(nextDot.tag);
+            isMatched = true;
+        } else if (nextDot.GetComponent<Dot>().isColorBomb) {
+            //the other piece is the color bomb and this piece has the color to destroy
+            findMatches.MatchPiecesOfColor(gameObject.tag);
+            nextDot.GetComponent<Dot>().isMatched = true;
+        }
         yield return new WaitForSeconds(.5f);
         if (nextDot != null) {
             var nextDotComponent = nextDot.GetComponent<Dot>();
