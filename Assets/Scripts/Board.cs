@@ -18,6 +18,7 @@ public class Board : MonoBehaviour {
     public GameObject[,] allDots;
     public FindMatches findMatches;
     public GameObject destroyEffect;
+    public Dot currentDot;
 
     // Start is called before the first frame update
     private void Start() {
@@ -79,6 +80,10 @@ public class Board : MonoBehaviour {
 
     private void DestroyMatchesAt(int column, int row) {
         if (allDots[column, row].GetComponent<Dot>().isMatched) {
+            //check count of matching pieces
+            if (findMatches.currentMatches.Count > 3) {
+                findMatches.CheckBombs();
+            }
             findMatches.currentMatches.Remove(allDots[column, row]);
             var particle = Instantiate(destroyEffect, allDots[column, row].transform.position, Quaternion.identity);
             Destroy(particle, .5f);
@@ -154,6 +159,8 @@ public class Board : MonoBehaviour {
             DestroyMatches();
         }
 
+        findMatches.currentMatches.Clear();
+        currentDot = null;
         yield return new WaitForSeconds(.5f);
         currentState = GameState.move;
     }

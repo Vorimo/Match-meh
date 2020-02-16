@@ -3,8 +3,7 @@ using System.Collections;
 using UnityEngine;
 
 public class Dot : MonoBehaviour {
-    [Header("boardVariables")]
-    public int column;
+    [Header("Board variables")] public int column;
     public int row;
     private int targetX;
     private int targetY;
@@ -13,27 +12,31 @@ public class Dot : MonoBehaviour {
     public bool isMatched;
 
     private FindMatches findMatches;
-    private GameObject nextDot;
+    public GameObject nextDot;
     private Board board;
     private Vector2 firstTouchPosition;
     private Vector2 finalTouchPosition;
-    private float swipeAngle;
     private Vector2 tempPosition;
 
+    [Header("Swipe stuff")]
+    public float swipeAngle;
     private const float SwipeResist = .6f;
 
+    [Header("Powerup stuff")] public bool isColumnBomb;
+
+    public bool isRowBomb;
+    public GameObject rowArrow;
+    public GameObject columnArrow;
+
     private void Start() {
+        isColumnBomb = false;
+        isRowBomb = false;
         // works only if there is one board
         board = FindObjectOfType<Board>();
         findMatches = FindObjectOfType<FindMatches>();
     }
 
     private void Update() {
-        if (isMatched) {
-            var mySprite = GetComponent<SpriteRenderer>();
-            mySprite.color = new Color(1, 1, 1, .2f);
-        }
-
         TriggerXPosition();
         TriggerYPosition();
     }
@@ -51,10 +54,11 @@ public class Dot : MonoBehaviour {
             else {
                 board.DestroyMatches();
                 yield return new WaitForSeconds(.5f);
+                board.currentDot = null;
                 board.currentState = GameState.move;
             }
 
-            nextDot = null;
+            //nextDot = null;
         }
     }
 
@@ -81,6 +85,7 @@ public class Dot : MonoBehaviour {
             if (board.allDots[column, row] != gameObject) {
                 board.allDots[column, row] = gameObject;
             }
+
             findMatches.FindAllMatches();
         }
         else {
@@ -100,6 +105,7 @@ public class Dot : MonoBehaviour {
             if (board.allDots[column, row] != gameObject) {
                 board.allDots[column, row] = gameObject;
             }
+
             findMatches.FindAllMatches();
         }
         else {
@@ -117,7 +123,9 @@ public class Dot : MonoBehaviour {
                 finalTouchPosition.x - firstTouchPosition.x) * 180 / Mathf.PI;
             SwipeElements();
             board.currentState = GameState.wait;
-        } else {
+            board.currentDot = this;
+        }
+        else {
             board.currentState = GameState.move;
         }
     }
@@ -157,5 +165,17 @@ public class Dot : MonoBehaviour {
         }
 
         StartCoroutine(CheckMoveCoroutine());
+    }
+
+    public void MakeRowBomb() {
+        isRowBomb = true;
+        var arrow = Instantiate(rowArrow, transform.position, Quaternion.identity);
+        arrow.transform.parent = transform;
+    }
+
+    public void MakeColumnBomb() {
+        isColumnBomb = true;
+        var arrow = Instantiate(columnArrow, transform.position, Quaternion.identity);
+        arrow.transform.parent = transform;
     }
 }

@@ -109,7 +109,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 74260958860ccde4d99bcb1e08ac2277, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  column: 0
   row: 0
   previousColumn: 0
   previousRow: 0
   isMatched: 0
+  isColumnBomb: 0
+  isRowBomb: 0
+  rowArrow: {fileID: 182141586467438603, guid: 317eba87fdef28d408058c83faf2488a, type: 3}
+  columnArrow: {fileID: 3025721325296665507, guid: cc81bab6662576943aa6c796e29d7cd4,
+    type: 3}
