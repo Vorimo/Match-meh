@@ -27,8 +27,17 @@ public class FindMatches : MonoBehaviour {
                         var rightDot = board.allDots[i + 1, j];
                         if (leftDot != null && rightDot != null) {
                             if (leftDot.CompareTag(currentDot.tag) && rightDot.CompareTag(currentDot.tag)) {
+                                if (!currentMatches.Contains(leftDot)) {
+                                    currentMatches.Add(leftDot);
+                                }
                                 leftDot.GetComponent<Dot>().isMatched = true;
+                                if (!currentMatches.Contains(rightDot)) {
+                                    currentMatches.Add(rightDot);
+                                }
                                 rightDot.GetComponent<Dot>().isMatched = true;
+                                if (!currentMatches.Contains(currentDot)) {
+                                    currentMatches.Add(currentDot);
+                                }
                                 currentDot.GetComponent<Dot>().isMatched = true;
                             }
                         }
@@ -39,8 +48,17 @@ public class FindMatches : MonoBehaviour {
                         var downDot = board.allDots[i, j - 1];
                         if (upDot != null && downDot != null) {
                             if (upDot.CompareTag(currentDot.tag) && downDot.CompareTag(currentDot.tag)) {
+                                if (!currentMatches.Contains(upDot)) {
+                                    currentMatches.Add(upDot);
+                                }
                                 upDot.GetComponent<Dot>().isMatched = true;
+                                if (!currentMatches.Contains(downDot)) {
+                                    currentMatches.Add(downDot);
+                                }
                                 downDot.GetComponent<Dot>().isMatched = true;
+                                if (!currentMatches.Contains(currentDot)) {
+                                    currentMatches.Add(currentDot);
+                                }
                                 currentDot.GetComponent<Dot>().isMatched = true;
                             }
                         }

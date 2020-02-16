@@ -8,7 +8,6 @@ public enum GameState {
 }
 
 public class Board : MonoBehaviour {
-
     public GameState currentState = GameState.move;
     public int width;
     public int height;
@@ -17,9 +16,12 @@ public class Board : MonoBehaviour {
     private BackgroundTile[,] allTiles;
     public GameObject[] dots;
     public GameObject[,] allDots;
+    public FindMatches findMatches;
+    public GameObject destroyEffect;
 
     // Start is called before the first frame update
     private void Start() {
+        findMatches = FindObjectOfType<FindMatches>();
         allTiles = new BackgroundTile[width, height];
         allDots = new GameObject[width, height];
         SetUp();
@@ -77,6 +79,9 @@ public class Board : MonoBehaviour {
 
     private void DestroyMatchesAt(int column, int row) {
         if (allDots[column, row].GetComponent<Dot>().isMatched) {
+            findMatches.currentMatches.Remove(allDots[column, row]);
+            var particle = Instantiate(destroyEffect, allDots[column, row].transform.position, Quaternion.identity);
+            Destroy(particle, .5f);
             Destroy(allDots[column, row]);
             allDots[column, row] = null;
         }
@@ -148,6 +153,7 @@ public class Board : MonoBehaviour {
             yield return new WaitForSeconds(.5f);
             DestroyMatches();
         }
+
         yield return new WaitForSeconds(.5f);
         currentState = GameState.move;
     }

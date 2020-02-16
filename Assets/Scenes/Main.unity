@@ -125,7 +125,7 @@ GameObject:
   m_Layer: 0
   m_Name: Match Finder
   m_TagString: Untagged
-  m_Icon: {fileID: -964228994112308473, guid: 0000000000000000d000000000000000, type: 0}
+  m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -169,7 +169,7 @@ GameObject:
   m_Layer: 0
   m_Name: Board
   m_TagString: Untagged
-  m_Icon: {fileID: -964228994112308473, guid: 0000000000000000d000000000000000, type: 0}
+  m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -211,6 +211,9 @@ MonoBehaviour:
   - {fileID: 7411830149561343603, guid: 01d041df5891efe45bde10cae33ad534, type: 3}
   - {fileID: 8333632425101567958, guid: 01cdc02d142573a4e9366d84eb0d752e, type: 3}
   - {fileID: 7236345025904524089, guid: fb717385b7d73ce40898558ef1c00e9d, type: 3}
+  findMatches: {fileID: 0}
+  destroyEffect: {fileID: 2503815567674456866, guid: d55ad88b1dfe3394d8b7ce6c49079773,
+    type: 3}
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
