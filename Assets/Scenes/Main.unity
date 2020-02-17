@@ -200,10 +200,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentState: 1
-  width: 14
-  height: 14
+  width: 7
+  height: 7
   offset: 10
   tilePrefab: {fileID: 2133113830096391264, guid: 886c5c45ddcf5b740aedb1ba3f9f180f,
+    type: 3}
+  breakableTilePrefab: {fileID: 582240984240680461, guid: 04b1e2aa7dcec3845b9a3b3b5a05cd1a,
     type: 3}
   dots:
   - {fileID: 6688386818624229738, guid: e6c48e40a2eb8894e9d3df242c921ada, type: 3}
@@ -211,10 +213,28 @@ MonoBehaviour:
   - {fileID: 7411830149561343603, guid: 01d041df5891efe45bde10cae33ad534, type: 3}
   - {fileID: 8333632425101567958, guid: 01cdc02d142573a4e9366d84eb0d752e, type: 3}
   - {fileID: 7236345025904524089, guid: fb717385b7d73ce40898558ef1c00e9d, type: 3}
-  findMatches: {fileID: 0}
   destroyEffect: {fileID: 2503815567674456866, guid: d55ad88b1dfe3394d8b7ce6c49079773,
     type: 3}
   currentDot: {fileID: 0}
+  boardLayout:
+  - x: 2
+    y: 2
+    tileKind: 1
+  - x: 3
+    y: 3
+    tileKind: 1
+  - x: 1
+    y: 5
+    tileKind: 1
+  - x: 5
+    y: 1
+    tileKind: 1
+  - x: 6
+    y: 6
+    tileKind: 0
+  - x: 7
+    y: 7
+    tileKind: 0
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -254,7 +274,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c0d3a57d89c8a84eacc52fdbb2d2df6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cameraOffset: 10
+  cameraOffset: -10
+  aspectRatio: 0.5625
+  padding: 2
 --- !u!20 &519420031
 Camera:
   m_ObjectHideFlags: 0
@@ -305,7 +327,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 519420028}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3, y: 5, z: -10}
+  m_LocalPosition: {x: 0, y: 0, z: -9.21}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}

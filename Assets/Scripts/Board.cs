@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Runtime.InteropServices.ComTypes;
+using System.Collections;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -27,16 +26,19 @@ public class Board : MonoBehaviour {
     public int height;
     public int offset;
     public GameObject tilePrefab;
+    public GameObject breakableTilePrefab;
     private bool[,] blankSpaces;
+    private BackgroundTile[,] breakableTiles;
     public GameObject[] dots;
     public GameObject[,] allDots;
-    public FindMatches findMatches;
+    private FindMatches findMatches;
     public GameObject destroyEffect;
     public Dot currentDot;
     public TileType[] boardLayout;
 
     // Start is called before the first frame update
     private void Start() {
+        breakableTiles = new BackgroundTile[width, height];
         findMatches = FindObjectOfType<FindMatches>();
         blankSpaces = new bool[width, height];
         allDots = new GameObject[width, height];
@@ -46,13 +48,26 @@ public class Board : MonoBehaviour {
     public void GenerateBlankSpaces() {
         for (var i = 0; i < boardLayout.Length; i++) {
             if (boardLayout[i].tileKind == TileKind.BLANK) {
+                //create a blank space at position
                 blankSpaces[boardLayout[i].x, boardLayout[i].y] = true;
+            }
+        }
+    }
+
+    public void GenerateBreakableTiles() {
+        //look at all tiles in the layout
+        for (var i = 0; i < boardLayout.Length; i++) {
+            if (boardLayout[i].tileKind == TileKind.BREAKABLE) {
+                var temporaryPosition = new Vector2(boardLayout[i].x, boardLayout[i].y);
+                var tile = Instantiate(breakableTilePrefab, temporaryPosition, Quaternion.identity);
+                breakableTiles[boardLayout[i].x, boardLayout[i].y] = tile.GetComponent<BackgroundTile>();
             }
         }
     }
 
     private void SetUp() {
         GenerateBlankSpaces();
+        GenerateBreakableTiles();
         for (var i = 0; i < width; i++) {
             for (var j = 0; j < height; j++) {
                 if (!blankSpaces[i, j]) {
@@ -200,7 +215,13 @@ public class Board : MonoBehaviour {
             if (findMatches.currentMatches.Count > 3) {
                 CheckToMakeBombs();
             }
-
+            //tile is need to break
+            if (breakableTiles[column, row] != null) {
+                breakableTiles[column,row].TakeDamage(1);
+                if (breakableTiles[column, row].hitPoint <= 0) {
+                    breakableTiles[column, row] = null;
+                }
+            }
             var particle = Instantiate(destroyEffect, allDots[column, row].transform.position, Quaternion.identity);
             Destroy(particle, .5f);
             Destroy(allDots[column, row]);
