@@ -64,6 +64,7 @@ public class Dot : MonoBehaviour {
             isMatched = true;
         }
 
+        //todo убрать задержки
         yield return new WaitForSeconds(.5f);
         if (nextDot != null) {
             var nextDotComponent = nextDot.GetComponent<Dot>();
@@ -75,9 +76,10 @@ public class Dot : MonoBehaviour {
             }
             else {
                 board.DestroyMatches();
+                //todo убрать задержки
                 yield return new WaitForSeconds(.5f);
                 board.currentDot = null;
-                board.currentState = GameState.move;
+                board.currentState = GameState.MOVE;
             }
 
             //nextDot = null;
@@ -85,13 +87,13 @@ public class Dot : MonoBehaviour {
     }
 
     private void OnMouseDown() {
-        if (board.currentState == GameState.move) {
+        if (board.currentState == GameState.MOVE) {
             firstTouchPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         }
     }
 
     private void OnMouseUp() {
-        if (board.currentState == GameState.move) {
+        if (board.currentState == GameState.MOVE) {
             finalTouchPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             CalculateAngle();
         }
@@ -141,14 +143,14 @@ public class Dot : MonoBehaviour {
         //ignore clicks
         if (Math.Abs(firstTouchPosition.x - finalTouchPosition.x) > SwipeResist ||
             Math.Abs(firstTouchPosition.y - finalTouchPosition.y) > SwipeResist) {
-            board.currentState = GameState.wait;
+            board.currentState = GameState.WAIT;
             swipeAngle = Mathf.Atan2(finalTouchPosition.y - firstTouchPosition.y,
                 finalTouchPosition.x - firstTouchPosition.x) * 180 / Mathf.PI;
             SwipeElements();
             board.currentDot = this;
         }
         else {
-            board.currentState = GameState.move;
+            board.currentState = GameState.MOVE;
         }
     }
 
@@ -156,11 +158,16 @@ public class Dot : MonoBehaviour {
         nextDot = board.allDots[column + (int) direction.x, row + (int) direction.y];
         previousRow = row;
         previousColumn = column;
-        nextDot.GetComponent<Dot>().column -= (int) direction.x;
-        nextDot.GetComponent<Dot>().row -= (int) direction.y;
-        column += (int) direction.x;
-        row += (int) direction.y;
-        StartCoroutine(CheckMoveCoroutine());
+        if (nextDot != null) {
+            nextDot.GetComponent<Dot>().column -= (int) direction.x;
+            nextDot.GetComponent<Dot>().row -= (int) direction.y;
+            column += (int) direction.x;
+            row += (int) direction.y;
+            StartCoroutine(CheckMoveCoroutine());
+        }
+        else {
+            board.currentState = GameState.MOVE;
+        }
     }
 
     private void SwipeElements() {
@@ -181,7 +188,7 @@ public class Dot : MonoBehaviour {
             MovePiecesActual(Vector2.down);
         }
         else {
-            board.currentState = GameState.move;
+            board.currentState = GameState.MOVE;
         }
     }
 

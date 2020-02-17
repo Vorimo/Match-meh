@@ -51,6 +51,7 @@ public class FindMatches : MonoBehaviour {
     }
 
     private IEnumerator FindAllMatchesCoroutine() {
+        //todo убрать задержки
         yield return new WaitForSeconds(.2f);
         for (var i = 0; i < board.width; i++) {
             for (var j = 0; j < board.height; j++) {

@@ -1,77 +1,119 @@
 ﻿using System.Collections;
+using System.Runtime.InteropServices.ComTypes;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
 public enum GameState {
-    wait,
-    move
+    WAIT,
+    MOVE
+}
+
+public enum TileKind {
+    BREAKABLE,
+    BLANK,
+    NORMAL
+}
+
+[System.Serializable]
+public class TileType {
+    public int x;
+    public int y;
+    public TileKind tileKind;
 }
 
 public class Board : MonoBehaviour {
-    public GameState currentState = GameState.move;
+    public GameState currentState = GameState.MOVE;
     public int width;
     public int height;
     public int offset;
     public GameObject tilePrefab;
-    private BackgroundTile[,] allTiles;
+    private bool[,] blankSpaces;
     public GameObject[] dots;
     public GameObject[,] allDots;
     public FindMatches findMatches;
     public GameObject destroyEffect;
     public Dot currentDot;
+    public TileType[] boardLayout;
 
     // Start is called before the first frame update
     private void Start() {
         findMatches = FindObjectOfType<FindMatches>();
-        allTiles = new BackgroundTile[width, height];
+        blankSpaces = new bool[width, height];
         allDots = new GameObject[width, height];
         SetUp();
     }
 
+    public void GenerateBlankSpaces() {
+        for (var i = 0; i < boardLayout.Length; i++) {
+            if (boardLayout[i].tileKind == TileKind.BLANK) {
+                blankSpaces[boardLayout[i].x, boardLayout[i].y] = true;
+            }
+        }
+    }
+
     private void SetUp() {
+        GenerateBlankSpaces();
         for (var i = 0; i < width; i++) {
             for (var j = 0; j < height; j++) {
-                var tempPosition = new Vector2(i, j);
-                var backgroundTile = Instantiate(tilePrefab, tempPosition, Quaternion.identity);
-                backgroundTile.transform.parent = transform;
-                var elementName = "( " + i + ", " + j + " )";
-                backgroundTile.name = elementName;
-                var readyToInsertElement = Random.Range(0, dots.Length);
-                // count of recalculating board elements times
-                var maxIterations = 0;
-                while (MatchesAt(i, j, dots[readyToInsertElement]) && maxIterations < 100) {
-                    readyToInsertElement = Random.Range(0, dots.Length);
-                    maxIterations++;
+                if (!blankSpaces[i, j]) {
+                    var tempPosition = new Vector2(i, j + offset);
+                    var backgroundTile = Instantiate(tilePrefab, tempPosition, Quaternion.identity);
+                    backgroundTile.transform.parent = transform;
+                    var elementName = "( " + i + ", " + j + " )";
+                    backgroundTile.name = elementName;
+                    var readyToInsertElement = Random.Range(0, dots.Length);
+                    // count of recalculating board elements times
+                    var maxIterations = 0;
+                    while (MatchesAt(i, j, dots[readyToInsertElement]) && maxIterations < 100) {
+                        readyToInsertElement = Random.Range(0, dots.Length);
+                        maxIterations++;
+                    }
+
+                    maxIterations = 0;
+
+                    var dot = Instantiate(dots[readyToInsertElement], tempPosition, Quaternion.identity);
+                    dot.GetComponent<Dot>().row = j;
+                    dot.GetComponent<Dot>().column = i;
+                    dot.transform.parent = transform;
+                    dot.name = elementName;
+                    allDots[i, j] = dot;
                 }
-
-                maxIterations = 0;
-
-                var dot = Instantiate(dots[readyToInsertElement], tempPosition, Quaternion.identity);
-                dot.GetComponent<Dot>().row = j;
-                dot.GetComponent<Dot>().column = i;
-                dot.transform.parent = transform;
-                dot.name = elementName;
-                allDots[i, j] = dot;
             }
         }
     }
 
     private bool MatchesAt(int column, int row, GameObject piece) {
         if (column > 1 && row > 1) {
-            if (allDots[column - 1, row].CompareTag(piece.tag) && allDots[column - 2, row].CompareTag(piece.tag)
-                || allDots[column, row - 1].CompareTag(piece.tag) && allDots[column, row - 2].CompareTag(piece.tag)) {
-                return true;
+            if (allDots[column - 1, row] != null && allDots[column - 2, row] != null) {
+                if (allDots[column - 1, row].CompareTag(piece.tag) && allDots[column - 2, row].CompareTag(piece.tag)) {
+                    return true;
+                }
+
+                if (allDots[column, row - 1] != null && allDots[column, row - 2] != null) {
+                    if (allDots[column, row - 1].CompareTag(piece.tag) &&
+                        allDots[column, row - 2].CompareTag(piece.tag)) {
+                        return true;
+                    }
+                }
             }
         }
         else {
-            if (row > 1 && allDots[column, row - 1].CompareTag(piece.tag) &&
-                allDots[column, row - 2].CompareTag(piece.tag)) {
-                return true;
+            if (row > 1) {
+                if (allDots[column, row - 1] != null && allDots[column, row - 2] != null) {
+                    if (allDots[column, row - 1].CompareTag(piece.tag) &&
+                        allDots[column, row - 2].CompareTag(piece.tag)) {
+                        return true;
+                    }
+                }
             }
 
-            if (column > 1 && allDots[column - 1, row].CompareTag(piece.tag) &&
-                allDots[column - 2, row].CompareTag(piece.tag)) {
-                return true;
+            if (column > 1) {
+                if (allDots[column - 1, row] != null && allDots[column - 2, row] != null) {
+                    if (allDots[column - 1, row].CompareTag(piece.tag) &&
+                        allDots[column - 2, row].CompareTag(piece.tag)) {
+                        return true;
+                    }
+                }
             }
         }
 
@@ -113,7 +155,8 @@ public class Board : MonoBehaviour {
                             currentDot.isMatched = false;
                             currentDot.MakeColorBomb();
                         }
-                    } else {
+                    }
+                    else {
                         if (currentDot.nextDot != null) {
                             var nextDot = currentDot.nextDot.GetComponent<Dot>();
                             if (nextDot.isMatched) {
@@ -123,7 +166,6 @@ public class Board : MonoBehaviour {
                                 }
                             }
                         }
-                        
                     }
                 }
             }
@@ -135,7 +177,8 @@ public class Board : MonoBehaviour {
                             currentDot.isMatched = false;
                             currentDot.MakeAdjacentBomb();
                         }
-                    } else {
+                    }
+                    else {
                         if (currentDot.nextDot != null) {
                             var nextDot = currentDot.nextDot.GetComponent<Dot>();
                             if (nextDot.isMatched) {
@@ -145,7 +188,6 @@ public class Board : MonoBehaviour {
                                 }
                             }
                         }
-                        
                     }
                 }
             }
@@ -176,7 +218,32 @@ public class Board : MonoBehaviour {
         }
 
         findMatches.currentMatches.Clear();
-        StartCoroutine(DecreaseRowCoroutine());
+        StartCoroutine(DecreaseRowCoroutine2());
+    }
+
+    private IEnumerator DecreaseRowCoroutine2() {
+        for (var i = 0; i < width; i++) {
+            for (var j = 0; j < height; j++) {
+                //current spot isn't blank and is empty
+                if (!blankSpaces[i, j] && allDots[i, j] == null) {
+                    //loop from the space above to the top of column
+                    for (var k = j + 1; k < height; k++) {
+                        //if a dot is found
+                        if (allDots[i, k] != null) {
+                            //move that element to the empty space
+                            allDots[i, k].GetComponent<Dot>().row = j;
+                            //set that spot to be null
+                            allDots[i, k] = null;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        //todo убрать задержки
+        yield return new WaitForSeconds(.4f);
+        StartCoroutine(FillBoardCoroutine());
     }
 
     private IEnumerator DecreaseRowCoroutine() {
@@ -195,6 +262,7 @@ public class Board : MonoBehaviour {
             emptySpacesCount = 0;
         }
 
+        //todo убрать задержки
         yield return new WaitForSeconds(.4f);
         StartCoroutine(FillBoardCoroutine());
     }
@@ -202,7 +270,7 @@ public class Board : MonoBehaviour {
     private void RefillBoard() {
         for (var i = 0; i < width; i++) {
             for (var j = 0; j < height; j++) {
-                if (allDots[i, j] == null) {
+                if (allDots[i, j] == null && !blankSpaces[i, j]) {
                     var tempPosition = new Vector2(i, j + offset);
                     var elementToUse = Random.Range(0, dots.Length);
                     var piece = Instantiate(dots[elementToUse], tempPosition, Quaternion.identity);
@@ -228,15 +296,18 @@ public class Board : MonoBehaviour {
 
     private IEnumerator FillBoardCoroutine() {
         RefillBoard();
+        //todo убрать задержки
         yield return new WaitForSeconds(.5f);
         while (MatchesOnBoard()) {
+            //todo убрать задержки
             yield return new WaitForSeconds(.5f);
             DestroyMatches();
         }
 
         findMatches.currentMatches.Clear();
         currentDot = null;
+        //todo убрать задержки
         yield return new WaitForSeconds(.5f);
-        currentState = GameState.move;
+        currentState = GameState.MOVE;
     }
 }
