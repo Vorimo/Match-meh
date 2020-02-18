@@ -5,6 +5,7 @@ public class CameraScalar : MonoBehaviour {
     public float cameraOffset;
     public float aspectRatio = 0.5625f;
     public float padding = 2;
+    public float yOffset = 1;
 
 
     // Start is called before the first frame update
@@ -16,7 +17,7 @@ public class CameraScalar : MonoBehaviour {
     }
 
     private void RepositionCamera(float x, float y) {
-        var tempPosition = new Vector3(x / 2, y / 2, cameraOffset);
+        var tempPosition = new Vector3(x / 2, y / 2 + yOffset, cameraOffset);
         transform.position = tempPosition;
         if (board.width >= board.height) {
             Camera.main.orthographicSize = (board.width / 2 + padding) / aspectRatio;
