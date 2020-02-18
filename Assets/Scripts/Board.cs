@@ -113,8 +113,7 @@ public class Board : MonoBehaviour {
                     }
                 }
             }
-        }
-        else {
+        } else {
             if (row > 1) {
                 if (allDots[column, row - 1] != null && allDots[column, row - 2] != null) {
                     if (allDots[column, row - 1].CompareTag(piece.tag) &&
@@ -172,8 +171,7 @@ public class Board : MonoBehaviour {
                             currentDot.isMatched = false;
                             currentDot.MakeColorBomb();
                         }
-                    }
-                    else {
+                    } else {
                         if (currentDot.nextDot != null) {
                             var nextDot = currentDot.nextDot.GetComponent<Dot>();
                             if (nextDot.isMatched) {
@@ -185,8 +183,7 @@ public class Board : MonoBehaviour {
                         }
                     }
                 }
-            }
-            else {
+            } else {
                 //make a adjacent bomb
                 if (currentDot != null) {
                     if (currentDot.isMatched) {
@@ -194,8 +191,7 @@ public class Board : MonoBehaviour {
                             currentDot.isMatched = false;
                             currentDot.MakeAdjacentBomb();
                         }
-                    }
-                    else {
+                    } else {
                         if (currentDot.nextDot != null) {
                             var nextDot = currentDot.nextDot.GetComponent<Dot>();
                             if (nextDot.isMatched) {

@@ -65,11 +65,13 @@ public class FindMatches : MonoBehaviour {
                             var leftDotComponent = leftDot.GetComponent<Dot>();
                             var rightDotComponent = rightDot.GetComponent<Dot>();
                             if (leftDot.CompareTag(currentDot.tag) && rightDot.CompareTag(currentDot.tag)) {
-                                ProcessElementsAffectedByBombIfBombExists(new List<Dot>
-                                    {currentDotComponent, leftDotComponent, rightDotComponent});
+                                ProcessElementsAffectedByBombIfBombExists(new List<Dot> {
+                                    currentDotComponent, leftDotComponent, rightDotComponent
+                                });
 
-                                ProcessAdjacentBombAffectedElementsIfExists(new List<Dot>
-                                    {currentDotComponent, leftDotComponent, rightDotComponent});
+                                ProcessAdjacentBombAffectedElementsIfExists(new List<Dot> {
+                                    currentDotComponent, leftDotComponent, rightDotComponent
+                                });
 
                                 ProcessNearbyPieces(new List<GameObject> {currentDot, leftDot, rightDot});
                             }
@@ -83,10 +85,12 @@ public class FindMatches : MonoBehaviour {
                             var upDotComponent = upDot.GetComponent<Dot>();
                             var downDotComponent = downDot.GetComponent<Dot>();
                             if (upDot.CompareTag(currentDot.tag) && downDot.CompareTag(currentDot.tag)) {
-                                ProcessElementsAffectedByBombIfBombExists(new List<Dot>
-                                    {currentDotComponent, downDotComponent, upDotComponent});
-                                ProcessAdjacentBombAffectedElementsIfExists(new List<Dot>
-                                    {currentDotComponent, downDotComponent, upDotComponent});
+                                ProcessElementsAffectedByBombIfBombExists(new List<Dot> {
+                                    currentDotComponent, downDotComponent, upDotComponent
+                                });
+                                ProcessAdjacentBombAffectedElementsIfExists(new List<Dot> {
+                                    currentDotComponent, downDotComponent, upDotComponent
+                                });
 
                                 ProcessNearbyPieces(new List<GameObject> {currentDot, downDot, upDot});
                             }
@@ -160,8 +164,7 @@ public class FindMatches : MonoBehaviour {
                 if ((board.currentDot.swipeAngle > 45 && board.currentDot.swipeAngle <= 45)
                     || (board.currentDot.swipeAngle < -135 && board.currentDot.swipeAngle >= 135)) {
                     board.currentDot.MakeRowBomb();
-                }
-                else {
+                } else {
                     board.currentDot.MakeColumnBomb();
                 }
             }
@@ -175,8 +178,7 @@ public class FindMatches : MonoBehaviour {
                     if ((board.currentDot.swipeAngle > 45 && board.currentDot.swipeAngle <= 45)
                         || (board.currentDot.swipeAngle < -135 && board.currentDot.swipeAngle >= 135)) {
                         otherDot.MakeRowBomb();
-                    }
-                    else {
+                    } else {
                         otherDot.MakeColumnBomb();
                     }
                 }

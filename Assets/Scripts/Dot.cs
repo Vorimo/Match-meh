@@ -3,7 +3,9 @@ using System.Collections;
 using UnityEngine;
 
 public class Dot : MonoBehaviour {
-    [Header("Board variables")] public int column;
+    [Header("Board variables")]
+    public int column;
+
     public int row;
     private int targetX;
     private int targetY;
@@ -18,10 +20,14 @@ public class Dot : MonoBehaviour {
     private Vector2 finalTouchPosition;
     private Vector2 tempPosition;
 
-    [Header("Swipe stuff")] public float swipeAngle;
+    [Header("Swipe stuff")]
+    public float swipeAngle;
+
     private const float SwipeResist = .6f;
 
-    [Header("Powerup stuff")] public bool isColumnBomb;
+    [Header("Powerup stuff")]
+    public bool isColumnBomb;
+
     public bool isRowBomb;
     public bool isColorBomb;
     public bool isAdjacentBomb;
@@ -57,8 +63,7 @@ public class Dot : MonoBehaviour {
             //this piece is a color bomb and the other piece is the color to destroy
             findMatches.MatchPiecesOfColor(gameObject.tag);
             nextDot.GetComponent<Dot>().isMatched = true;
-        }
-        else if (nextDot.GetComponent<Dot>().isColorBomb) {
+        } else if (nextDot.GetComponent<Dot>().isColorBomb) {
             //the other piece is the color bomb and this piece has the color to destroy
             findMatches.MatchPiecesOfColor(nextDot.tag);
             isMatched = true;
@@ -73,8 +78,7 @@ public class Dot : MonoBehaviour {
                 nextDotComponent.column = column;
                 row = previousRow;
                 column = previousColumn;
-            }
-            else {
+            } else {
                 board.DestroyMatches();
                 //todo убрать задержки
                 yield return new WaitForSeconds(.5f);
@@ -111,8 +115,7 @@ public class Dot : MonoBehaviour {
             }
 
             findMatches.FindAllMatches();
-        }
-        else {
+        } else {
             //directly set the position
             tempPosition = new Vector2(targetX, transformPosition.y);
             transform.position = tempPosition;
@@ -131,8 +134,7 @@ public class Dot : MonoBehaviour {
             }
 
             findMatches.FindAllMatches();
-        }
-        else {
+        } else {
             //directly set the position
             tempPosition = new Vector2(transformPosition.x, targetY);
             transform.position = tempPosition;
@@ -148,8 +150,7 @@ public class Dot : MonoBehaviour {
                 finalTouchPosition.x - firstTouchPosition.x) * 180 / Mathf.PI;
             SwipeElements();
             board.currentDot = this;
-        }
-        else {
+        } else {
             board.currentState = GameState.MOVE;
         }
     }
@@ -164,8 +165,7 @@ public class Dot : MonoBehaviour {
             column += (int) direction.x;
             row += (int) direction.y;
             StartCoroutine(CheckMoveCoroutine());
-        }
-        else {
+        } else {
             board.currentState = GameState.MOVE;
         }
     }
@@ -174,20 +174,16 @@ public class Dot : MonoBehaviour {
         if (swipeAngle > -45 && swipeAngle <= 45 && column < board.width - 1) {
             //right swipe
             MovePiecesActual(Vector2.right);
-        }
-        else if (swipeAngle > 45 && swipeAngle <= 135 && row < board.height - 1) {
+        } else if (swipeAngle > 45 && swipeAngle <= 135 && row < board.height - 1) {
             //up swipe
             MovePiecesActual(Vector2.up);
-        }
-        else if ((swipeAngle > 135 || swipeAngle <= -135) && column > 0) {
+        } else if ((swipeAngle > 135 || swipeAngle <= -135) && column > 0) {
             //left swipe
             MovePiecesActual(Vector2.left);
-        }
-        else if (swipeAngle < -45 && swipeAngle >= -135 && row > 0) {
+        } else if (swipeAngle < -45 && swipeAngle >= -135 && row > 0) {
             //down swipe
             MovePiecesActual(Vector2.down);
-        }
-        else {
+        } else {
             board.currentState = GameState.MOVE;
         }
     }
