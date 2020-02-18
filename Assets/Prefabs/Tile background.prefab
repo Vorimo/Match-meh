@@ -92,9 +92,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3719f692d8c4920438ebe96cbdd307d4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dots:
-  - {fileID: 6688386818624229738, guid: e6c48e40a2eb8894e9d3df242c921ada, type: 3}
-  - {fileID: 2217061182787971219, guid: 7311a3f5f9e20774db7dddfd9d10d421, type: 3}
-  - {fileID: 7411830149561343603, guid: 01d041df5891efe45bde10cae33ad534, type: 3}
-  - {fileID: 8333632425101567958, guid: 01cdc02d142573a4e9366d84eb0d752e, type: 3}
-  - {fileID: 7236345025904524089, guid: fb717385b7d73ce40898558ef1c00e9d, type: 3}
+  hitPoint: 1
