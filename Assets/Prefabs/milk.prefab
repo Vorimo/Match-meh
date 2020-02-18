@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 58176129342658942}
   - component: {fileID: 114228947545856240}
   m_Layer: 0
-  m_Name: milk
+  m_Name: Milk
   m_TagString: milk
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -70,8 +70,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 41305e5fe29afa445a2fb0d65daf5f35, type: 3}
-  m_Color: {r: 0.43921572, g: 0.5686275, b: 0.8941177, a: 1}
+  m_Sprite: {fileID: 21300000, guid: e8cf4cb3f9d0cad439cf1a5a4bbc4783, type: 3}
+  m_Color: {r: 0.9528302, g: 0.9528302, b: 0.9528302, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0

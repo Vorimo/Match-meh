@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 58314752717500488}
   - component: {fileID: 114190710511468398}
   m_Layer: 0
-  m_Name: onion
+  m_Name: Onion
   m_TagString: onion
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -70,8 +70,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 41305e5fe29afa445a2fb0d65daf5f35, type: 3}
-  m_Color: {r: 0.6117647, g: 0.8862746, b: 0.9803922, a: 1}
+  m_Sprite: {fileID: 21300000, guid: 0f160e43b5188434c9fc00064cdf6f5b, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
