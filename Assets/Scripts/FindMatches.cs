@@ -110,7 +110,7 @@ public class FindMatches : MonoBehaviour {
         }
     }
 
-    private List<GameObject> GetColumnPieces(int column) {
+    private IEnumerable<GameObject> GetColumnPieces(int column) {
         var dots = new List<GameObject>();
         for (var i = 0; i < board.height; i++) {
             if (board.allDots[column, i] != null) {

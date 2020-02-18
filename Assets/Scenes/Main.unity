@@ -200,8 +200,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentState: 1
-  width: 7
-  height: 7
+  width: 4
+  height: 4
   offset: 10
   tilePrefab: {fileID: 2133113830096391264, guid: 886c5c45ddcf5b740aedb1ba3f9f180f,
     type: 3}
@@ -216,25 +216,7 @@ MonoBehaviour:
   destroyEffect: {fileID: 2503815567674456866, guid: d55ad88b1dfe3394d8b7ce6c49079773,
     type: 3}
   currentDot: {fileID: 0}
-  boardLayout:
-  - x: 2
-    y: 2
-    tileKind: 1
-  - x: 3
-    y: 3
-    tileKind: 1
-  - x: 1
-    y: 5
-    tileKind: 1
-  - x: 5
-    y: 1
-    tileKind: 1
-  - x: 6
-    y: 6
-    tileKind: 0
-  - x: 7
-    y: 7
-    tileKind: 0
+  boardLayout: []
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,4 +1,5 @@
-using System.Collections;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -45,7 +46,7 @@ public class Board : MonoBehaviour {
         SetUp();
     }
 
-    public void GenerateBlankSpaces() {
+    private void GenerateBlankSpaces() {
         for (var i = 0; i < boardLayout.Length; i++) {
             if (boardLayout[i].tileKind == TileKind.BLANK) {
                 //create a blank space at position
@@ -54,7 +55,7 @@ public class Board : MonoBehaviour {
         }
     }
 
-    public void GenerateBreakableTiles() {
+    private void GenerateBreakableTiles() {
         //look at all tiles in the layout
         for (var i = 0; i < boardLayout.Length; i++) {
             if (boardLayout[i].tileKind == TileKind.BREAKABLE) {
@@ -72,7 +73,8 @@ public class Board : MonoBehaviour {
             for (var j = 0; j < height; j++) {
                 if (!blankSpaces[i, j]) {
                     var tempPosition = new Vector2(i, j + offset);
-                    var backgroundTile = Instantiate(tilePrefab, tempPosition, Quaternion.identity);
+                    var tilePosition = new Vector2(i, j);
+                    var backgroundTile = Instantiate(tilePrefab, tilePosition, Quaternion.identity);
                     backgroundTile.transform.parent = transform;
                     var elementName = "( " + i + ", " + j + " )";
                     backgroundTile.name = elementName;
@@ -135,7 +137,7 @@ public class Board : MonoBehaviour {
         return false;
     }
 
-    public bool ColumnOrRow() {
+    private bool ColumnOrRow() {
         var numberHorizontal = 0;
         var numberVertical = 0;
         var firstPiece = findMatches.currentMatches[0].GetComponent<Dot>();
@@ -215,13 +217,15 @@ public class Board : MonoBehaviour {
             if (findMatches.currentMatches.Count > 3) {
                 CheckToMakeBombs();
             }
+
             //tile is need to break
             if (breakableTiles[column, row] != null) {
-                breakableTiles[column,row].TakeDamage(1);
+                breakableTiles[column, row].TakeDamage(1);
                 if (breakableTiles[column, row].hitPoint <= 0) {
                     breakableTiles[column, row] = null;
                 }
             }
+
             var particle = Instantiate(destroyEffect, allDots[column, row].transform.position, Quaternion.identity);
             Destroy(particle, .5f);
             Destroy(allDots[column, row]);
@@ -260,27 +264,6 @@ public class Board : MonoBehaviour {
                     }
                 }
             }
-        }
-
-        //todo убрать задержки
-        yield return new WaitForSeconds(.4f);
-        StartCoroutine(FillBoardCoroutine());
-    }
-
-    private IEnumerator DecreaseRowCoroutine() {
-        var emptySpacesCount = 0;
-        for (var i = 0; i < width; i++) {
-            for (var j = 0; j < height; j++) {
-                if (allDots[i, j] == null) {
-                    emptySpacesCount++;
-                }
-                else if (emptySpacesCount > 0) {
-                    allDots[i, j].GetComponent<Dot>().row -= emptySpacesCount;
-                    allDots[i, j] = null;
-                }
-            }
-
-            emptySpacesCount = 0;
         }
 
         //todo убрать задержки
@@ -327,8 +310,119 @@ public class Board : MonoBehaviour {
 
         findMatches.currentMatches.Clear();
         currentDot = null;
+        if (IsDeadLocked()) {
+            ShuffleBoard();
+        }
+
         //todo убрать задержки
         yield return new WaitForSeconds(.5f);
         currentState = GameState.MOVE;
+    }
+
+    private void SwitchPieces(int column, int row, Vector2 direction) {
+        //take second piece and save it in a holder
+        var holder = allDots[column + (int) direction.x, row + (int) direction.y];
+        //switching the first element to be a second position
+        allDots[column + (int) direction.x, row + (int) direction.y] = allDots[column, row];
+        //set the first element to be the second element
+        allDots[column, row] = holder;
+    }
+
+    private bool CheckForMatches() {
+        for (var i = 0; i < width; i++) {
+            for (var j = 0; j < height; j++) {
+                if (allDots[i, j] != null) {
+                    if (i < width - 2) {
+                        if (allDots[i + 1, j] != null && allDots[i + 2, j] != null) {
+                            if (allDots[i + 1, j].CompareTag(allDots[i, j].tag) &&
+                                allDots[i + 2, j].CompareTag(allDots[i, j].tag)) {
+                                return true;
+                            }
+                        }
+                    }
+
+                    if (j < height - 2) {
+                        if (allDots[i, j + 1] != null && allDots[i, j + 2] != null) {
+                            if (allDots[i, j + 1].CompareTag(allDots[i, j].tag) &&
+                                allDots[i, j + 2].CompareTag(allDots[i, j].tag)) {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private bool SwitchAndCheck(int column, int row, Vector2 direction) {
+        SwitchPieces(column, row, direction);
+        if (CheckForMatches()) {
+            SwitchPieces(column, row, direction);
+            return true;
+        }
+
+        SwitchPieces(column, row, direction);
+        return false;
+    }
+
+    private bool IsDeadLocked() {
+        for (var i = 0; i < width; i++) {
+            for (var j = 0; j < height; j++) {
+                if (allDots[i, j] != null) {
+                    if (i < width - 1) {
+                        if (SwitchAndCheck(i, j, Vector2.right)) {
+                            return false;
+                        }
+                    }
+
+                    if (j < height - 1) {
+                        if (SwitchAndCheck(i, j, Vector2.up)) {
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+
+        return true;
+    }
+
+    private void ShuffleBoard() {
+        var newBoard = new List<GameObject>();
+        for (var i = 0; i < width; i++) {
+            for (var j = 0; j < height; j++) {
+                if (allDots[i, j] != null) {
+                    newBoard.Add(allDots[i, j]);
+                }
+            }
+        }
+
+        for (var i = 0; i < width; i++) {
+            for (var j = 0; j < height; j++) {
+                if (!blankSpaces[i, j]) {
+                    var pieceToUse = Random.Range(0, newBoard.Count);
+
+                    var maxIterations = 0;
+                    while (MatchesAt(i, j, newBoard[pieceToUse]) && maxIterations < 100) {
+                        pieceToUse = Random.Range(0, newBoard.Count);
+                        maxIterations++;
+                    }
+
+                    var piece = newBoard[pieceToUse].GetComponent<Dot>();
+
+                    maxIterations = 0;
+                    piece.column = i;
+                    piece.row = j;
+                    allDots[i, j] = newBoard[pieceToUse];
+                    newBoard.Remove(newBoard[pieceToUse]);
+                }
+            }
+        }
+
+        if (IsDeadLocked()) {
+            ShuffleBoard();
+        }
     }
 }
