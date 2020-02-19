@@ -209,6 +209,8 @@ public class Dot : MonoBehaviour {
     public void MakeColorBomb() {
         isColorBomb = true;
         AppendObject(colorBomb);
+        //todo без этого
+        gameObject.tag = "Color";
     }
 
     public void MakeAdjacentBomb() {

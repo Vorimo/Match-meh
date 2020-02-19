@@ -39,6 +39,7 @@ public class Board : MonoBehaviour {
     public int basePieceValue = 20;
     private int streakValue = 1;
     private ScoreManager scoreManager;
+    public float refillDelay = 0.5f;
 
     // Start is called before the first frame update
     private void Start() {
@@ -268,7 +269,7 @@ public class Board : MonoBehaviour {
         }
 
         //todo убрать задержки
-        yield return new WaitForSeconds(.4f);
+        yield return new WaitForSeconds(refillDelay * 0.5f);
         StartCoroutine(FillBoardCoroutine());
     }
 
@@ -278,6 +279,13 @@ public class Board : MonoBehaviour {
                 if (allDots[i, j] == null && !blankSpaces[i, j]) {
                     var tempPosition = new Vector2(i, j + offset);
                     var elementToUse = Random.Range(0, dots.Length);
+                    var maxIterations = 0;
+                    while (MatchesAt(i, j, dots[elementToUse]) && maxIterations < 100) {
+                        maxIterations++;
+                        elementToUse = Random.Range(0, dots.Length);
+                    }
+
+                    maxIterations = 0;
                     var piece = Instantiate(dots[elementToUse], tempPosition, Quaternion.identity);
                     allDots[i, j] = piece;
                     piece.GetComponent<Dot>().row = j;
@@ -302,12 +310,12 @@ public class Board : MonoBehaviour {
     private IEnumerator FillBoardCoroutine() {
         RefillBoard();
         //todo убрать задержки
-        yield return new WaitForSeconds(.5f);
+        yield return new WaitForSeconds(refillDelay);
         while (MatchesOnBoard()) {
-            streakValue ++;
-            //todo убрать задержки
-            yield return new WaitForSeconds(.5f);
+            streakValue++;
             DestroyMatches();
+            //todo убрать задержки
+            yield return new WaitForSeconds(2 * refillDelay);
         }
 
         findMatches.currentMatches.Clear();
@@ -317,7 +325,7 @@ public class Board : MonoBehaviour {
         }
 
         //todo убрать задержки
-        yield return new WaitForSeconds(.5f);
+        yield return new WaitForSeconds(refillDelay);
         currentState = GameState.MOVE;
         streakValue = 1;
     }
