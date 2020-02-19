@@ -41,9 +41,11 @@ public class Board : MonoBehaviour {
     private ScoreManager scoreManager;
     public float refillDelay = 0.5f;
     public int[] scoreGoals;
+    private SoundManager soundManager;
 
     // Start is called before the first frame update
     private void Start() {
+        soundManager = FindObjectOfType<SoundManager>();
         scoreManager = FindObjectOfType<ScoreManager>();
         breakableTiles = new BackgroundTile[width, height];
         findMatches = FindObjectOfType<FindMatches>();
@@ -228,6 +230,9 @@ public class Board : MonoBehaviour {
                 }
             }
 
+            if (soundManager != null) {
+                soundManager.PlayRandomDestroyNoise();
+            }
             var particle = Instantiate(destroyEffect, allDots[column, row].transform.position, Quaternion.identity);
             Destroy(particle, .5f);
             Destroy(allDots[column, row]);
