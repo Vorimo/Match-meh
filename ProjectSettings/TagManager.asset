@@ -9,6 +9,7 @@ TagManager:
   - cheese
   - bread
   - tomato
+  - Color
   layers:
   - Default
   - TransparentFX
