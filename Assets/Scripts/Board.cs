@@ -25,18 +25,30 @@ public class TileType {
 }
 
 public class Board : MonoBehaviour {
-    public GameState currentState = GameState.MOVE;
+    [Header("Scriptable objects staff")]
+    public World world;
+
+    public int level;
+
+    [Header("Board dimensions")]
     public int width;
+
     public int height;
     public int offset;
+
+    [Header("Prefabs")]
     public GameObject tilePrefab;
+
     public GameObject breakableTilePrefab;
-    private bool[,] blankSpaces;
-    private BackgroundTile[,] breakableTiles;
     public GameObject[] dots;
+    public GameObject destroyEffect;
+
+    [Header("Layout")]
+    private bool[,] blankSpaces;
+
+    private BackgroundTile[,] breakableTiles;
     public GameObject[,] allDots;
     private FindMatches findMatches;
-    public GameObject destroyEffect;
     public Dot currentDot;
     public TileType[] boardLayout;
     public int basePieceValue = 20;
@@ -46,6 +58,8 @@ public class Board : MonoBehaviour {
     public int[] scoreGoals;
     private SoundManager soundManager;
     public GoalManager goalManager;
+
+    public GameState currentState = GameState.MOVE;
 
     // Start is called before the first frame update
     private void Start() {
@@ -58,6 +72,18 @@ public class Board : MonoBehaviour {
         allDots = new GameObject[width, height];
         currentState = GameState.PAUSE;
         SetUp();
+    }
+
+    private void Awake() {
+        if (world != null) {
+            if (world.levels[level] != null) {
+                width = world.levels[level].width;
+                height = world.levels[level].height;
+                dots = world.levels[level].dots;
+                scoreGoals = world.levels[level].scoreGoals;
+                boardLayout = world.levels[level].boardLayout;
+            }
+        }
     }
 
     private void GenerateBlankSpaces() {
@@ -237,12 +263,14 @@ public class Board : MonoBehaviour {
             }
 
             if (goalManager != null) {
-                goalManager.CompareGoal(allDots[column,row].tag);
+                goalManager.CompareGoal(allDots[column, row].tag);
                 goalManager.UpdateGoals();
             }
+
             if (soundManager != null) {
                 soundManager.PlayRandomDestroyNoise();
             }
+
             var particle = Instantiate(destroyEffect, allDots[column, row].transform.position, Quaternion.identity);
             Destroy(particle, .5f);
             Destroy(allDots[column, row]);
