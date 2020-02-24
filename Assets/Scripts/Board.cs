@@ -5,7 +5,10 @@ using Random = UnityEngine.Random;
 
 public enum GameState {
     WAIT,
-    MOVE
+    MOVE,
+    WIN,
+    LOSE,
+    PAUSE
 }
 
 public enum TileKind {
@@ -53,6 +56,7 @@ public class Board : MonoBehaviour {
         findMatches = FindObjectOfType<FindMatches>();
         blankSpaces = new bool[width, height];
         allDots = new GameObject[width, height];
+        currentState = GameState.PAUSE;
         SetUp();
     }
 

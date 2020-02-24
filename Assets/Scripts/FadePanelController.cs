@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
 public class FadePanelController : MonoBehaviour {
     public Animator panelAnim;
@@ -8,6 +10,13 @@ public class FadePanelController : MonoBehaviour {
         if (panelAnim != null && gameInfoAnim != null) {
             panelAnim.SetBool("Out", true);
             gameInfoAnim.SetBool("Out", true);
+            StartCoroutine(GameStartCoroutine());
         }
+    }
+
+    private IEnumerator GameStartCoroutine() {
+        yield return new WaitForSeconds(1.5f);
+        var board = FindObjectOfType<Board>();
+        board.currentState = GameState.MOVE;
     }
 }

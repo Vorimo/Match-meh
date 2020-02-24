@@ -20,6 +20,7 @@ public class Dot : MonoBehaviour {
     private Vector2 firstTouchPosition;
     private Vector2 finalTouchPosition;
     private Vector2 tempPosition;
+    private EndGameManager endGameManager;
 
     [Header("Swipe stuff")]
     public float swipeAngle;
@@ -46,6 +47,7 @@ public class Dot : MonoBehaviour {
         // works only if there is one board
         board = FindObjectOfType<Board>();
         findMatches = FindObjectOfType<FindMatches>();
+        endGameManager = FindObjectOfType<EndGameManager>();
     }
 
     private void Update() {
@@ -81,12 +83,19 @@ public class Dot : MonoBehaviour {
                 nextDotComponent.column = column;
                 row = previousRow;
                 column = previousColumn;
-            } else {
-                board.DestroyMatches();
                 //todo убрать задержки
                 yield return new WaitForSeconds(.5f);
                 board.currentDot = null;
                 board.currentState = GameState.MOVE;
+            } else {
+                if (endGameManager != null) {
+                    if (endGameManager.requirements.gameType == GameType.MOVES) {
+                        endGameManager.DecreaseCounterValue();
+                    } else {
+                        
+                    }
+                }
+                board.DestroyMatches();
             }
 
             //nextDot = null;
