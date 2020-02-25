@@ -1,22 +1,26 @@
-﻿using UnityEngine;
+﻿using Entity;
+using Managers;
+using UnityEngine;
 
-[CreateAssetMenu(fileName = "Level", menuName = "Level")]
-public class Level : ScriptableObject {
-    [Header("Board dimensions")]
-    public int width;
+namespace Scriptable_Objects {
+    [CreateAssetMenu(fileName = "Level", menuName = "Level")]
+    public class Level : ScriptableObject {
+        [Header("Board dimensions")]
+        public int width;
 
-    public int height;
+        public int height;
 
-    [Header("Starting tiles")]
-    public TileType[] boardLayout;
+        [Header("Starting tiles")]
+        public Tile[] boardLayout;
 
-    [Header("Available elements")]
-    public GameObject[] dots;
+        [Header("Available elements")]
+        public GameObject[] dots;
 
-    public int[] scoreGoals;
+        public int[] scoreGoals;
 
-    [Header("End game requirements")]
-    public EndGameRequirements endGameRequirements;
+        [Header("End game requirements")]
+        public EndGameRequirementState endGameRequirementState;
 
-    public BlankGoal[] levelGoals;
+        public GlobalLevelGoal[] levelGoals;
+    }
 }
